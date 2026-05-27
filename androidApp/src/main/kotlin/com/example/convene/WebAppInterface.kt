@@ -26,6 +26,13 @@ class WebAppInterface(
     fun saveEvent(eventJson: String) {
         val event = Json.decodeFromString<Event>(eventJson)
         repository.saveEvent(event)
+        activity.runOnUiThread {
+            NotificationHelper.showNotification(
+                activity,
+                "Session Added",
+                "\"${event.title}\" has been added to your schedule"
+            )
+        }
     }
 
     // Web → Native: Toggle favorite

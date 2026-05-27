@@ -1,6 +1,7 @@
 package com.example.convene
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -9,6 +10,8 @@ import androidx.core.content.ContextCompat
 import com.example.convene.repository.EventRepository
 import com.example.convene.storage.AndroidStorage
 import androidx.biometric.BiometricPrompt
+import androidx.core.app.ActivityCompat
+import android.Manifest
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +26,8 @@ class MainActivity : AppCompatActivity() {
         // Setup repository with Android secure storage
         repository = EventRepository(AndroidStorage(this))
         repository.seedDemoData()
+        NotificationHelper.createChannel(this)
+        requestNotificationPermission()
 
         // Setup WebView
         webView = WebView(this)
@@ -47,6 +52,16 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         webView.evaluateJavascript("onAppResumed()", null)
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                100
+            )
+        }
     }
 
     // Biometric setup
